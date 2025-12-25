@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { Token, DOMNode, SimulationStep, CSSRule, StepMeta, FilterReason, LayerReason } from '../types'
-import type { StyledNode, RenderNode, LayoutBox, PaintCommand, Layer } from '../engine'
+import type { StyledNode, RenderNode, LayoutBox, PaintCommand, Layer, PipelineResult } from '../engine'
 
 export const useSimulationStore = defineStore('simulation', () => {
   // 状态
@@ -25,6 +25,11 @@ export const useSimulationStore = defineStore('simulation', () => {
   const stepMetas = ref<StepMeta[]>([])
   const filterReasons = ref<FilterReason[]>([])
   const layerReasons = ref<LayerReason[]>([])
+
+  // Diff 模式
+  const diffMode = ref(false)
+  const cssSourceB = ref('')  // 对比用的第二份 CSS
+  const resultB = ref<PipelineResult | null>(null)  // 第二份渲染结果
 
   // 计算属性
   const currentStep = computed(() => 
@@ -101,6 +106,22 @@ export const useSimulationStore = defineStore('simulation', () => {
     layerReasons.value = reasons
   }
 
+  // Diff 模式操作
+  function setDiffMode(enabled: boolean) {
+    diffMode.value = enabled
+    if (!enabled) {
+      resultB.value = null
+    }
+  }
+
+  function setCssSourceB(css: string) {
+    cssSourceB.value = css
+  }
+
+  function setResultB(result: PipelineResult | null) {
+    resultB.value = result
+  }
+
   function addStep(step: Omit<SimulationStep, 'timestamp'>) {
     steps.value.push({
       ...step,
@@ -143,6 +164,8 @@ export const useSimulationStore = defineStore('simulation', () => {
     stepMetas.value = []
     filterReasons.value = []
     layerReasons.value = []
+    // 重置 Diff 结果（但保留模式和 CSS B）
+    resultB.value = null
   }
 
   function setTokens(newTokens: Token[]) {
@@ -190,6 +213,10 @@ export const useSimulationStore = defineStore('simulation', () => {
     stepMetas,
     filterReasons,
     layerReasons,
+    // Diff 模式
+    diffMode,
+    cssSourceB,
+    resultB,
     // 计算属性
     currentStep,
     currentMeta,
@@ -209,6 +236,9 @@ export const useSimulationStore = defineStore('simulation', () => {
     addStepMeta,
     setFilterReasons,
     setLayerReasons,
+    setDiffMode,
+    setCssSourceB,
+    setResultB,
     addStep,
     forward,
     backward,

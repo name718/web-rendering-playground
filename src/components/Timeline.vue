@@ -13,7 +13,7 @@ function handleStart() {
   
   store.reset()
   
-  // 使用 Pipeline 运行完整流水线
+  // 使用 Pipeline 运行完整流水线（CSS A）
   const result = runPipeline({
     html: store.htmlSource,
     css: store.cssSource,
@@ -34,6 +34,16 @@ function handleStart() {
   result.meta.steps.forEach(meta => store.addStepMeta(meta))
   store.setFilterReasons(result.meta.filterReasons)
   store.setLayerReasons(result.meta.layerReasons)
+  
+  // Diff 模式：运行第二份 CSS
+  if (store.diffMode && store.cssSourceB.trim()) {
+    const resultB = runPipeline({
+      html: store.htmlSource,
+      css: store.cssSourceB,
+      options: { containerWidth: 600 }
+    })
+    store.setResultB(resultB)
+  }
   
   // 初始化：选中第一个 Token
   if (result.tokens.length > 0) {
@@ -185,5 +195,14 @@ onUnmounted(() => {
         <option :value="200">极快 (0.2s)</option>
       </select>
     </div>
+    
+    <!-- Diff 模式开关 -->
+    <button
+      class="px-2 py-1 text-xs rounded transition"
+      :class="store.diffMode ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-400'"
+      @click="store.setDiffMode(!store.diffMode)"
+    >
+      🔀 Diff
+    </button>
   </div>
 </template>
