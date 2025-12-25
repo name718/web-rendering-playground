@@ -1,11 +1,35 @@
 <script setup lang="ts">
 import { useSimulationStore } from '../stores/simulation'
+import { tokenizer, domBuilder } from '../engine'
 
 const store = useSimulationStore()
 
 function handleStart() {
-  // TODO: 触发解析流程
-  console.log('Start parsing:', store.htmlSource)
+  if (!store.htmlSource.trim()) return
+  
+  // 重置状态
+  store.reset()
+  
+  // Step 1: Tokenize
+  const tokens = tokenizer.tokenize(store.htmlSource)
+  store.setTokens(tokens)
+  store.addStep({
+    type: 'tokenize',
+    description: `词法分析完成，生成 ${tokens.length} 个 Token`,
+    data: tokens
+  })
+  
+  // Step 2: Build DOM
+  const domTree = domBuilder.build(tokens)
+  store.setDomTree(domTree)
+  store.addStep({
+    type: 'build-dom',
+    description: '构建 DOM 树完成',
+    data: domTree
+  })
+  
+  // 跳转到第一步
+  store.jumpTo(0)
 }
 </script>
 
