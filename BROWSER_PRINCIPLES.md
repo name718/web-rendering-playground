@@ -143,8 +143,143 @@
 
 ---
 
+## 待实现功能
+
+### ⭐ 1. Step Meta 信息（解释"为什么"）
+
+**目标**: 让每一步都能回答"为什么"
+
+**数据结构设计**:
+```typescript
+interface StepMeta {
+  step: StepType
+  action: string           // 做了什么
+  reason: string           // 为什么这样做
+  affectedNodes?: string[] // 影响了哪些节点
+  explanation?: string     // 详细解释（面试知识点）
+}
+```
+
+**示例场景**:
+| 场景 | reason | explanation |
+|------|--------|-------------|
+| display:none 节点被过滤 | "display:none 不占据空间" | "与 visibility:hidden 不同，display:none 完全从渲染树移除" |
+| width 变化触发回流 | "几何属性变化触发 Layout" | "width/height/padding/margin 等属性会触发回流" |
+| color 变化只触发重绘 | "非几何属性只触发 Repaint" | "color/background 等不影响布局，只需重绘" |
+| transform 创建新图层 | "GPU 加速优化" | "transform 在合成层处理，不触发回流重绘" |
+
+---
+
+### ⭐ 2. 对比实验场景（Diff Mode）
+
+**目标**: 同样 DOM，改一个 CSS，对比差异
+
+**功能设计**:
+- 左右两栏对比模式
+- 高亮差异节点
+- 显示：Render Tree 差异、Layout 差异、Paint 指令变化
+
+**预置对比实验**:
+
+| 实验名称 | 场景 A | 场景 B | 教学点 |
+|---------|--------|--------|--------|
+| display vs visibility | `display: none` | `visibility: hidden` | Render Tree 差异 |
+| color vs width | 改 `color` | 改 `width` | 回流 vs 重绘 |
+| position static vs absolute | `position: static` | `position: absolute` | 文档流 |
+| transform vs left | 用 `left` 移动 | 用 `transform` 移动 | 合成层优化 |
+
+---
+
+### ⭐ 3. Engine 与 UI 彻底解耦
+
+**目标**: Engine 可单测、可 CLI 跑、可输出 JSON
+
+**架构设计**:
+```
+src/
+├── engine/           # 纯计算，零 UI 依赖
+│   ├── index.ts      # 统一入口
+│   ├── tokenizer.ts
+│   ├── dom-builder.ts
+│   ├── css-parser.ts
+│   ├── style-computer.ts
+│   ├── render-tree.ts
+│   ├── layout.ts
+│   ├── paint.ts
+│   ├── composite.ts
+│   └── pipeline.ts   # 🆕 完整流水线封装
+│
+├── ui/               # 纯渲染，可替换
+│   └── components/
+│
+└── cli/              # 🆕 命令行工具
+    └── index.ts
+```
+
+**Pipeline API 设计**:
+```typescript
+const result = pipeline.run({
+  html: '<div>Hello</div>',
+  css: 'div { color: red; }',
+  options: { containerWidth: 800 }
+})
+
+// 输出完整的中间产物
+result.tokens
+result.domTree
+result.cssRules
+result.styledTree
+result.renderTree
+result.layoutTree
+result.paintCommands
+result.layers
+result.meta          // 🆕 每一步的 Meta 信息
+```
+
+---
+
+### ⭐ 4. 预置 Demo 场景
+
+**目标**: 5 个 Demo，每个解决 1 个面试问题
+
+| Demo | 问题 | 演示内容 |
+|------|------|----------|
+| Demo 1 | 为什么改 color 不回流？ | 对比 color vs width 的 Paint 指令差异 |
+| Demo 2 | 为什么 offsetHeight 会触发 Layout？ | 展示强制同步布局的过程 |
+| Demo 3 | 为什么 absolute 脱离文档流？ | 对比 static vs absolute 的 Layout 差异 |
+| Demo 4 | display:none vs visibility:hidden？ | 对比 Render Tree 差异 |
+| Demo 5 | 为什么 transform 性能好？ | 展示合成层，不触发回流重绘 |
+
+---
+
+### ⭐ 5. 可视化增强（D3 升级）
+
+**目标**: 用动画展示渲染流程
+
+**增强点**:
+- DOM Tree 节点生长动画
+- Layout 盒子展开动画
+- Paint 指令逐条执行动画
+- 节点高亮联动（点击任意视图，其他视图同步高亮）
+
+**注意**: D3 只在 UI 层，永远不进 Engine
+
+---
+
+## 优先级排序
+
+1. **Step Meta 信息** - 核心教学价值，让工具能"解释"
+2. **Engine 解耦 + Pipeline** - 工程能力体现，支撑后续功能
+3. **预置 Demo 场景** - 直接可用的教学内容
+4. **对比实验模式** - 面试官眼前一亮的功能
+5. **可视化动画** - 锦上添花
+
+---
+
 ## 参考资料
 
 - [HTML Living Standard - Tokenization](https://html.spec.whatwg.org/multipage/parsing.html#tokenization)
 - [How Browsers Work](https://web.dev/howbrowserswork/)
 - [浏览器渲染原理](https://developer.mozilla.org/zh-CN/docs/Web/Performance/How_browsers_work)
+- [Rendering Performance](https://web.dev/rendering-performance/)
+- [CSS Triggers](https://csstriggers.com/) - 哪些属性触发回流/重绘
