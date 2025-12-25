@@ -72,10 +72,6 @@ export class LayoutEngine {
     // 计算高度
     const contentHeight = this.calculateHeight(style, childY - (y + margin.top + border.top + padding.top))
 
-    // 总尺寸
-    const totalWidth = margin.left + border.left + padding.left + contentWidth + padding.right + border.right + margin.right
-    const totalHeight = margin.top + border.top + padding.top + contentHeight + padding.bottom + border.bottom + margin.bottom
-
     return {
       id: node.id,
       tagName: node.tagName,
@@ -97,8 +93,6 @@ export class LayoutEngine {
     style: ComputedStyle,
     property: 'margin' | 'padding' | 'border'
   ): { top: number; right: number; bottom: number; left: number } {
-    const defaultValue = { top: 0, right: 0, bottom: 0, left: 0 }
-
     // 尝试解析简写属性
     const shorthand = style[property]
     if (shorthand) {

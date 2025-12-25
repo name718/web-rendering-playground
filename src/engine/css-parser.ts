@@ -146,7 +146,7 @@ export class CSSParser {
       .replace(/\.[a-zA-Z_-][a-zA-Z0-9_-]*/g, '')
       .replace(/\[[^\]]+\]/g, '')
       .replace(/:[a-zA-Z-]+(?:\([^)]*\))?/g, '')
-      .replace(/::[a-zA-Z-]+/g, (match) => {
+      .replace(/::[a-zA-Z-]+/g, () => {
         elements++ // 伪元素
         return ''
       })
