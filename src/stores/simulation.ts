@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { Token, DOMNode, SimulationStep, CSSRule } from '../types'
+import type { StyledNode } from '../engine'
 
 export const useSimulationStore = defineStore('simulation', () => {
   // 状态
@@ -9,6 +10,7 @@ export const useSimulationStore = defineStore('simulation', () => {
   const tokens = ref<Token[]>([])
   const domTree = ref<DOMNode | null>(null)
   const cssRules = ref<CSSRule[]>([])
+  const styledTree = ref<StyledNode | null>(null)
   const steps = ref<SimulationStep[]>([])
   const currentStepIndex = ref(-1)
   const isPlaying = ref(false)
@@ -45,6 +47,10 @@ export const useSimulationStore = defineStore('simulation', () => {
     cssRules.value = rules
   }
 
+  function setStyledTree(tree: StyledNode) {
+    styledTree.value = tree
+  }
+
   function addStep(step: Omit<SimulationStep, 'timestamp'>) {
     steps.value.push({
       ...step,
@@ -74,6 +80,7 @@ export const useSimulationStore = defineStore('simulation', () => {
     tokens.value = []
     domTree.value = null
     cssRules.value = []
+    styledTree.value = null
     steps.value = []
     currentStepIndex.value = -1
     isPlaying.value = false
@@ -111,6 +118,7 @@ export const useSimulationStore = defineStore('simulation', () => {
     tokens,
     domTree,
     cssRules,
+    styledTree,
     steps,
     currentStepIndex,
     isPlaying,
@@ -126,6 +134,7 @@ export const useSimulationStore = defineStore('simulation', () => {
     setHtmlSource,
     setCssSource,
     setCssRules,
+    setStyledTree,
     addStep,
     forward,
     backward,

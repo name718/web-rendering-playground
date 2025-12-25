@@ -1,3 +1,6 @@
 export { HTMLTokenizer, tokenizer } from './tokenizer'
 export { DOMBuilder, domBuilder } from './dom-builder'
 export { CSSParser, cssParser } from './css-parser'
+export { StyleComputer, styleComputer } from './style-computer'
+export type { CSSRule, CSSDeclaration } from './css-parser'
+export type { ComputedStyle, StyledNode } from './style-computer'

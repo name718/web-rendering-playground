@@ -3,6 +3,7 @@ import SourcePanel from './components/SourcePanel.vue'
 import CSSPanel from './components/CSSPanel.vue'
 import TokenList from './components/TokenList.vue'
 import CSSOMView from './components/CSSOMView.vue'
+import StyleView from './components/StyleView.vue'
 import VisualizationCanvas from './components/VisualizationCanvas.vue'
 import Timeline from './components/Timeline.vue'
 </script>
@@ -37,9 +38,14 @@ import Timeline from './components/Timeline.vue'
         </div>
       </div>
 
-      <!-- Right: Visualization -->
-      <div class="flex-1 min-h-0">
-        <VisualizationCanvas />
+      <!-- Right: DOM Tree & Style -->
+      <div class="flex-1 flex flex-col min-h-0">
+        <div class="flex-1 min-h-0">
+          <VisualizationCanvas />
+        </div>
+        <div class="h-32 border-t border-gray-700 overflow-hidden">
+          <StyleView />
+        </div>
       </div>
     </main>
 
