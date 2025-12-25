@@ -7,6 +7,10 @@ export { LayoutEngine, layoutEngine } from './layout'
 export { PaintGenerator, paintGenerator } from './paint'
 export { CompositeAnalyzer, compositeAnalyzer } from './composite'
 
+// Pipeline - 完整流水线
+export { Pipeline, createPipeline, runPipeline } from './pipeline'
+export type { PipelineInput, PipelineResult } from './pipeline'
+
 // Meta 信息生成器
 export {
   analyzeFilterReasons,

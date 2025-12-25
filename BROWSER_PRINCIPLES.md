@@ -183,55 +183,52 @@
 
 ---
 
-### ⭐ 3. Engine 与 UI 彻底解耦
+### ✅ 3. Engine 与 UI 彻底解耦 - 已实现
 
-**目标**: Engine 可单测、可 CLI 跑、可输出 JSON
+**文件**: `src/engine/pipeline.ts`
 
-**架构设计**:
-```
-src/
-├── engine/           # 纯计算，零 UI 依赖
-│   ├── index.ts      # 统一入口
-│   ├── tokenizer.ts
-│   ├── dom-builder.ts
-│   ├── css-parser.ts
-│   ├── style-computer.ts
-│   ├── render-tree.ts
-│   ├── layout.ts
-│   ├── paint.ts
-│   ├── composite.ts
-│   └── pipeline.ts   # 🆕 完整流水线封装
-│
-├── ui/               # 纯渲染，可替换
-│   └── components/
-│
-└── cli/              # 🆕 命令行工具
-    └── index.ts
-```
+**实现内容**:
+- `runPipeline()` 函数 - 一次调用完成全部 8 个阶段
+- `Pipeline` 类 - 支持链式调用
+- `PipelineResult` 类型 - 包含所有中间产物 + Meta + 统计信息
 
-**Pipeline API 设计**:
+**使用示例**:
 ```typescript
-const result = pipeline.run({
+import { runPipeline, createPipeline } from './engine'
+
+// 方式 1: 函数调用
+const result = runPipeline({
   html: '<div>Hello</div>',
   css: 'div { color: red; }',
   options: { containerWidth: 800 }
 })
 
-// 输出完整的中间产物
-result.tokens
-result.domTree
-result.cssRules
-result.styledTree
-result.renderTree
-result.layoutTree
-result.paintCommands
-result.layers
-result.meta          // 🆕 每一步的 Meta 信息
+// 方式 2: 链式调用
+const result2 = createPipeline()
+  .setHTML('<div>Hello</div>')
+  .setCSS('div { color: red; }')
+  .setContainerWidth(800)
+  .run()
+
+// 输出 JSON（CLI 使用）
+const json = createPipeline()
+  .setHTML('<div>Hello</div>')
+  .toJSON()
+```
+
+**输出结构**:
+```typescript
+{
+  tokens, domTree, cssRules, styledTree,
+  renderTree, layoutTree, paintCommands, layers,
+  meta: { steps, filterReasons, layerReasons },
+  stats: { tokenCount, domNodeCount, ... }
+}
 ```
 
 ---
 
-### ⭐ 4. 预置 Demo 场景
+### ⭐ 4. 对比实验场景（Diff Mode）
 
 **目标**: 5 个 Demo，每个解决 1 个面试问题
 
@@ -262,7 +259,7 @@ result.meta          // 🆕 每一步的 Meta 信息
 ## 优先级排序
 
 1. ~~**Step Meta 信息**~~ ✅ 已完成
-2. **Engine 解耦 + Pipeline** - 工程能力体现，支撑后续功能
+2. ~~**Engine 解耦 + Pipeline**~~ ✅ 已完成
 3. **预置 Demo 场景** - 直接可用的教学内容
 4. **对比实验模式** - 面试官眼前一亮的功能
 5. **可视化动画** - 锦上添花
