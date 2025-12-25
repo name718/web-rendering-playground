@@ -13,21 +13,28 @@ function generateId(): string {
 export class DOMBuilder {
   private root: DOMNode | null = null
   private stack: DOMNode[] = []
+  private currentTokenIndex: number = 0
 
   build(tokens: Token[]): DOMNode {
     nodeIdCounter = 0
+    this.currentTokenIndex = 0
     
     // 创建 document 根节点
     this.root = {
       id: generateId(),
       type: 'document',
       tagName: '#document',
-      children: []
+      children: [],
+      tokenIndex: -1  // document 节点没有对应的 token
     }
     this.stack = [this.root]
 
-    for (const token of tokens) {
-      this.processToken(token)
+    for (let i = 0; i < tokens.length; i++) {
+      this.currentTokenIndex = i
+      const token = tokens[i]
+      if (token) {
+        this.processToken(token)
+      }
     }
 
     return this.root
@@ -35,6 +42,7 @@ export class DOMBuilder {
 
   private processToken(token: Token): void {
     const current = this.stack[this.stack.length - 1]
+    if (!current) return
 
     switch (token.type) {
       case 'DOCTYPE':
@@ -70,7 +78,8 @@ export class DOMBuilder {
       tagName: token.name,
       attributes: token.attributes,
       children: [],
-      parent
+      parent,
+      tokenIndex: this.currentTokenIndex
     }
     
     parent.children.push(node)
@@ -79,11 +88,10 @@ export class DOMBuilder {
 
   private handleEndTag(token: Token): void {
     // 从栈中弹出匹配的开始标签
-    // 简化处理：直接弹出，不做严格匹配校验
     if (this.stack.length > 1) {
-      // 找到匹配的标签并弹出
       for (let i = this.stack.length - 1; i > 0; i--) {
-        if (this.stack[i].tagName === token.name) {
+        const stackNode = this.stack[i]
+        if (stackNode && stackNode.tagName === token.name) {
           this.stack.splice(i)
           break
         }
@@ -98,11 +106,11 @@ export class DOMBuilder {
       tagName: token.name,
       attributes: token.attributes,
       children: [],
-      parent
+      parent,
+      tokenIndex: this.currentTokenIndex
     }
     
     parent.children.push(node)
-    // 自闭合标签不入栈
   }
 
   private handleText(token: Token, parent: DOMNode): void {
@@ -111,7 +119,8 @@ export class DOMBuilder {
       type: 'text',
       textContent: token.content,
       children: [],
-      parent
+      parent,
+      tokenIndex: this.currentTokenIndex
     }
     
     parent.children.push(node)
@@ -123,7 +132,8 @@ export class DOMBuilder {
       type: 'comment',
       textContent: token.content,
       children: [],
-      parent
+      parent,
+      tokenIndex: this.currentTokenIndex
     }
     
     parent.children.push(node)

@@ -26,6 +26,7 @@ export interface DOMNode {
   attributes?: Record<string, string>
   children: DOMNode[]
   parent?: DOMNode
+  tokenIndex?: number  // 创建该节点的 Token 索引
 }
 
 // 模拟步骤
