@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { watch, onUnmounted } from 'vue'
 import { useSimulationStore } from '../stores/simulation'
-import { tokenizer, domBuilder } from '../engine'
+import { tokenizer, domBuilder, cssParser } from '../engine'
 
 const store = useSimulationStore()
 
@@ -13,13 +13,19 @@ function handleStart() {
   
   store.reset()
   
-  // 解析生成 Token
+  // Step 1: 解析 HTML 生成 Token
   const tokens = tokenizer.tokenize(store.htmlSource)
   store.setTokens(tokens)
   
-  // 构建 DOM 树
+  // Step 2: 构建 DOM 树
   const domTree = domBuilder.build(tokens)
   store.setDomTree(domTree)
+  
+  // Step 3: 解析 CSS 生成 CSSOM
+  if (store.cssSource.trim()) {
+    const rules = cssParser.parse(store.cssSource)
+    store.setCssRules(rules)
+  }
   
   // 初始化：选中第一个 Token
   if (tokens.length > 0) {

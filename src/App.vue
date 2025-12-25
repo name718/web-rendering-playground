@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import SourcePanel from './components/SourcePanel.vue'
+import CSSPanel from './components/CSSPanel.vue'
 import TokenList from './components/TokenList.vue'
+import CSSOMView from './components/CSSOMView.vue'
 import VisualizationCanvas from './components/VisualizationCanvas.vue'
 import Timeline from './components/Timeline.vue'
 </script>
@@ -14,19 +16,29 @@ import Timeline from './components/Timeline.vue'
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 flex overflow-hidden">
-      <!-- Left: Source Panel -->
-      <div class="w-72 border-r border-gray-700 flex-shrink-0">
-        <SourcePanel />
+    <main class="flex-1 flex overflow-hidden min-h-0">
+      <!-- Left: Source Panels -->
+      <div class="w-64 border-r border-gray-700 flex-shrink-0 flex flex-col min-h-0">
+        <div class="h-1/2 border-b border-gray-700 overflow-hidden">
+          <SourcePanel />
+        </div>
+        <div class="h-1/2 overflow-hidden">
+          <CSSPanel />
+        </div>
       </div>
 
-      <!-- Middle: Token List -->
-      <div class="w-64 border-r border-gray-700 flex-shrink-0">
-        <TokenList />
+      <!-- Middle: Token & CSSOM -->
+      <div class="w-56 border-r border-gray-700 flex-shrink-0 flex flex-col min-h-0">
+        <div class="h-1/2 border-b border-gray-700 overflow-hidden">
+          <TokenList />
+        </div>
+        <div class="h-1/2 overflow-hidden">
+          <CSSOMView />
+        </div>
       </div>
 
       <!-- Right: Visualization -->
-      <div class="flex-1">
+      <div class="flex-1 min-h-0">
         <VisualizationCanvas />
       </div>
     </main>

@@ -1,12 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { Token, DOMNode, SimulationStep } from '../types'
+import type { Token, DOMNode, SimulationStep, CSSRule } from '../types'
 
 export const useSimulationStore = defineStore('simulation', () => {
   // 状态
   const htmlSource = ref('')
+  const cssSource = ref('')
   const tokens = ref<Token[]>([])
   const domTree = ref<DOMNode | null>(null)
+  const cssRules = ref<CSSRule[]>([])
   const steps = ref<SimulationStep[]>([])
   const currentStepIndex = ref(-1)
   const isPlaying = ref(false)
@@ -33,6 +35,14 @@ export const useSimulationStore = defineStore('simulation', () => {
   function setHtmlSource(html: string) {
     htmlSource.value = html
     reset()
+  }
+
+  function setCssSource(css: string) {
+    cssSource.value = css
+  }
+
+  function setCssRules(rules: CSSRule[]) {
+    cssRules.value = rules
   }
 
   function addStep(step: Omit<SimulationStep, 'timestamp'>) {
@@ -63,6 +73,7 @@ export const useSimulationStore = defineStore('simulation', () => {
   function reset() {
     tokens.value = []
     domTree.value = null
+    cssRules.value = []
     steps.value = []
     currentStepIndex.value = -1
     isPlaying.value = false
@@ -96,8 +107,10 @@ export const useSimulationStore = defineStore('simulation', () => {
   return {
     // 状态
     htmlSource,
+    cssSource,
     tokens,
     domTree,
+    cssRules,
     steps,
     currentStepIndex,
     isPlaying,
@@ -111,6 +124,8 @@ export const useSimulationStore = defineStore('simulation', () => {
     selectedToken,
     // 操作
     setHtmlSource,
+    setCssSource,
+    setCssRules,
     addStep,
     forward,
     backward,

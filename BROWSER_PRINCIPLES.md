@@ -38,12 +38,23 @@
 
 ---
 
-## 待实现
-
 ### 3. CSS Parser（CSS 解析器）
+**文件**: `src/engine/css-parser.ts`
+
 **浏览器原理**:
 - 解析 CSS 字符串，生成 CSSOM（CSS Object Model）
-- 包括选择器解析、属性解析、优先级计算
+- CSS 解析也是词法分析 + 语法分析的过程
+- 解析选择器、声明块（属性: 值）
+- 计算选择器优先级（Specificity）
+
+**我们的实现**:
+- 简化版 CSS 解析器，支持基本选择器和声明
+- 计算优先级：[inline, id, class, element] 四元组
+- 跳过注释处理
+
+---
+
+## 待实现
 
 ### 4. Style Computation（样式计算）
 **浏览器原理**:

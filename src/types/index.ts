@@ -39,6 +39,13 @@ export type StepType =
   | 'layout'
   | 'paint'
 
+// CSS 规则
+export interface CSSRule {
+  selector: string
+  declarations: { property: string; value: string }[]
+  specificity: number[]
+}
+
 export interface SimulationStep {
   type: StepType
   description: string
