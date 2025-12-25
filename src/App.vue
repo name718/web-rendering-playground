@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SourcePanel from './components/SourcePanel.vue'
+import TokenList from './components/TokenList.vue'
 import VisualizationCanvas from './components/VisualizationCanvas.vue'
 import Timeline from './components/Timeline.vue'
 </script>
@@ -15,8 +16,13 @@ import Timeline from './components/Timeline.vue'
     <!-- Main Content -->
     <main class="flex-1 flex overflow-hidden">
       <!-- Left: Source Panel -->
-      <div class="w-80 border-r border-gray-700 flex-shrink-0">
+      <div class="w-72 border-r border-gray-700 flex-shrink-0">
         <SourcePanel />
+      </div>
+
+      <!-- Middle: Token List -->
+      <div class="w-64 border-r border-gray-700 flex-shrink-0">
+        <TokenList />
       </div>
 
       <!-- Right: Visualization -->
