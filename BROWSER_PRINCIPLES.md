@@ -72,13 +72,25 @@
 
 ---
 
-## 待实现
-
 ### 5. Render Tree（渲染树）
+**文件**: `src/engine/render-tree.ts`
+
 **浏览器原理**:
 - DOM Tree + Computed Style → Render Tree
-- 只包含可见节点（display:none 的节点不在渲染树中）
-- 每个渲染节点包含样式信息
+- 只包含可见节点
+- `display: none` 的节点不在渲染树中
+- `<head>`、`<script>`、`<style>` 等不渲染的标签被过滤
+- 每个渲染节点包含最终样式信息
+
+**我们的实现**:
+- 递归遍历 StyledNode，过滤不可见节点
+- 过滤 `display: none`
+- 过滤 head、script、style、meta 等标签
+- 生成精简的 RenderNode 结构
+
+---
+
+## 待实现
 
 ### 6. Layout（布局/回流）
 **浏览器原理**:
