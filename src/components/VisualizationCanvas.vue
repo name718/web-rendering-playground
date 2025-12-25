@@ -4,9 +4,10 @@ import { useSimulationStore } from '../stores/simulation'
 import DOMTreeView from './DOMTreeView.vue'
 import RenderTreeView from './RenderTreeView.vue'
 import LayoutView from './LayoutView.vue'
+import PaintView from './PaintView.vue'
 
 const store = useSimulationStore()
-const activeTab = ref<'dom' | 'render' | 'layout'>('dom')
+const activeTab = ref<'dom' | 'render' | 'layout' | 'paint'>('dom')
 </script>
 
 <template>
@@ -34,6 +35,13 @@ const activeTab = ref<'dom' | 'render' | 'layout'>('dom')
       >
         Layout
       </button>
+      <button
+        class="text-sm font-medium transition"
+        :class="activeTab === 'paint' ? 'text-blue-400' : 'text-gray-400 hover:text-gray-300'"
+        @click="activeTab = 'paint'"
+      >
+        Paint
+      </button>
     </div>
     
     <!-- 内容区 -->
@@ -52,8 +60,12 @@ const activeTab = ref<'dom' | 'render' | 'layout'>('dom')
         <RenderTreeView v-else />
       </template>
       
-      <template v-else>
+      <template v-else-if="activeTab === 'layout'">
         <LayoutView />
+      </template>
+      
+      <template v-else>
+        <PaintView />
       </template>
     </div>
   </div>
