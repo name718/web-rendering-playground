@@ -1,11 +1,31 @@
 <script setup lang="ts">
 import { watch, onUnmounted } from 'vue'
 import { useSimulationStore } from '../stores/simulation'
-import { tokenizer, domBuilder, cssParser, styleComputer, renderTreeBuilder, layoutEngine, paintGenerator, compositeAnalyzer } from '../engine'
+import { 
+  tokenizer, domBuilder, cssParser, styleComputer, 
+  renderTreeBuilder, layoutEngine, paintGenerator, compositeAnalyzer,
+  // Meta 生成器
+  analyzeFilterReasons, analyzeLayerReasons,
+  generateTokenizeMeta, generateDOMBuildMeta, generateCSSParseMeta,
+  generateStyleComputeMeta, generateRenderTreeMeta, generateLayoutMeta,
+  generatePaintMeta, generateCompositeMeta
+} from '../engine'
 
 const store = useSimulationStore()
 
 let playTimer: number | null = null
+
+// 计算 DOM 节点数量
+function countNodes(node: { children?: unknown[] } | null): number {
+  if (!node) return 0
+  let count = 1
+  if (node.children) {
+    for (const child of node.children) {
+      count += countNodes(child as { children?: unknown[] })
+    }
+  }
+  return count
+}
 
 // 开始解析 - 生成所有 Token，但不立即显示
 function handleStart() {
@@ -16,38 +36,55 @@ function handleStart() {
   // Step 1: 解析 HTML 生成 Token
   const tokens = tokenizer.tokenize(store.htmlSource)
   store.setTokens(tokens)
+  store.addStepMeta(generateTokenizeMeta(tokens.length))
   
   // Step 2: 构建 DOM 树
   const domTree = domBuilder.build(tokens)
   store.setDomTree(domTree)
+  store.addStepMeta(generateDOMBuildMeta(countNodes(domTree)))
   
   // Step 3: 解析 CSS 生成 CSSOM
   let rules: ReturnType<typeof cssParser.parse> = []
   if (store.cssSource.trim()) {
     rules = cssParser.parse(store.cssSource)
     store.setCssRules(rules)
+    store.addStepMeta(generateCSSParseMeta(rules.length))
   }
   
   // Step 4: 样式计算
   const styledTree = styleComputer.computeStyles(domTree, rules)
   store.setStyledTree(styledTree)
+  store.addStepMeta(generateStyleComputeMeta())
   
-  // Step 5: 构建渲染树
+  // Step 5: 构建渲染树 + 分析过滤原因
+  const filterReasons = analyzeFilterReasons(styledTree)
+  store.setFilterReasons(filterReasons)
+  
   const renderTree = renderTreeBuilder.build(styledTree)
   store.setRenderTree(renderTree)
+  
+  const totalNodes = countNodes(styledTree)
+  const renderedNodes = countNodes(renderTree)
+  store.addStepMeta(generateRenderTreeMeta(totalNodes, renderedNodes, filterReasons))
   
   // Step 6: 布局计算
   if (renderTree) {
     const layoutTree = layoutEngine.compute(renderTree, 600)
     store.setLayoutTree(layoutTree)
+    store.addStepMeta(generateLayoutMeta())
     
     // Step 7: 生成绘制指令
     const commands = paintGenerator.generate(layoutTree)
     store.setPaintCommands(commands)
+    store.addStepMeta(generatePaintMeta(commands.length))
     
-    // Step 8: 分析合成层
+    // Step 8: 分析合成层 + 图层原因
     const layers = compositeAnalyzer.analyze(layoutTree)
     store.setLayers(layers)
+    
+    const layerReasons = analyzeLayerReasons(layers)
+    store.setLayerReasons(layerReasons)
+    store.addStepMeta(generateCompositeMeta(layers.length, layerReasons))
   }
   
   // 初始化：选中第一个 Token

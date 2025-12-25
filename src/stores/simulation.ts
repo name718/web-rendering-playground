@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { Token, DOMNode, SimulationStep, CSSRule } from '../types'
+import type { Token, DOMNode, SimulationStep, CSSRule, StepMeta, FilterReason, LayerReason } from '../types'
 import type { StyledNode, RenderNode, LayoutBox, PaintCommand, Layer } from '../engine'
 
 export const useSimulationStore = defineStore('simulation', () => {
@@ -21,10 +21,21 @@ export const useSimulationStore = defineStore('simulation', () => {
   const speed = ref(1000) // 毫秒
   const selectedTokenIndex = ref<number | null>(null) // 当前选中的 Token
 
+  // Meta 信息 - 解释"为什么"
+  const stepMetas = ref<StepMeta[]>([])
+  const filterReasons = ref<FilterReason[]>([])
+  const layerReasons = ref<LayerReason[]>([])
+
   // 计算属性
   const currentStep = computed(() => 
     currentStepIndex.value >= 0 ? steps.value[currentStepIndex.value] : null
   )
+  
+  // 当前步骤的 Meta 信息
+  const currentMeta = computed(() => {
+    if (!currentStep.value) return null
+    return stepMetas.value.find(m => m.step === currentStep.value?.type) || null
+  })
   
   const canGoBack = computed(() => currentStepIndex.value > 0)
   const canGoForward = computed(() => currentStepIndex.value < steps.value.length - 1)
@@ -71,6 +82,25 @@ export const useSimulationStore = defineStore('simulation', () => {
     layers.value = newLayers
   }
 
+  // Meta 信息操作
+  function addStepMeta(meta: StepMeta) {
+    // 避免重复添加
+    const existing = stepMetas.value.findIndex(m => m.step === meta.step)
+    if (existing >= 0) {
+      stepMetas.value[existing] = meta
+    } else {
+      stepMetas.value.push(meta)
+    }
+  }
+
+  function setFilterReasons(reasons: FilterReason[]) {
+    filterReasons.value = reasons
+  }
+
+  function setLayerReasons(reasons: LayerReason[]) {
+    layerReasons.value = reasons
+  }
+
   function addStep(step: Omit<SimulationStep, 'timestamp'>) {
     steps.value.push({
       ...step,
@@ -109,6 +139,10 @@ export const useSimulationStore = defineStore('simulation', () => {
     currentStepIndex.value = -1
     isPlaying.value = false
     selectedTokenIndex.value = null
+    // 重置 Meta 信息
+    stepMetas.value = []
+    filterReasons.value = []
+    layerReasons.value = []
   }
 
   function setTokens(newTokens: Token[]) {
@@ -152,8 +186,13 @@ export const useSimulationStore = defineStore('simulation', () => {
     isPlaying,
     speed,
     selectedTokenIndex,
+    // Meta 信息
+    stepMetas,
+    filterReasons,
+    layerReasons,
     // 计算属性
     currentStep,
+    currentMeta,
     canGoBack,
     canGoForward,
     progress,
@@ -167,6 +206,9 @@ export const useSimulationStore = defineStore('simulation', () => {
     setLayoutTree,
     setPaintCommands,
     setLayers,
+    addStepMeta,
+    setFilterReasons,
+    setLayerReasons,
     addStep,
     forward,
     backward,
