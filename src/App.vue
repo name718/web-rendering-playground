@@ -19,9 +19,9 @@ const showMeta = ref(true)
 </script>
 
 <template>
-  <div class="app h-screen w-screen flex flex-col bg-gray-900 text-white overflow-hidden">
+  <div class="app h-screen w-screen flex flex-col bg-gray-950 text-white overflow-hidden p-2 gap-2">
     <!-- Header -->
-    <header class="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
+    <header class="px-4 py-3 bg-gray-900 rounded-xl flex items-center justify-between">
       <div class="flex items-center gap-4">
         <h1 class="text-lg font-semibold">Browser Internals Visualizer</h1>
         <DemoSelector />
@@ -48,15 +48,15 @@ const showMeta = ref(true)
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 flex overflow-hidden min-h-0">
+    <main class="flex-1 flex overflow-hidden min-h-0 gap-2">
       <!-- Left: Source Panels -->
-      <div class="w-64 border-r border-gray-700 flex-shrink-0 flex flex-col min-h-0">
-        <div class="h-1/2 border-b border-gray-700 overflow-hidden">
+      <div class="w-64 flex-shrink-0 flex flex-col min-h-0 gap-2">
+        <div class="flex-1 bg-gray-900 rounded-xl overflow-hidden">
           <SourcePanel />
         </div>
-        <div class="h-1/2 overflow-hidden flex flex-col">
+        <div class="flex-1 bg-gray-900 rounded-xl overflow-hidden flex flex-col">
           <!-- CSS A -->
-          <div :class="store.diffMode ? 'h-1/2 border-b border-gray-600' : 'h-full'">
+          <div :class="store.diffMode ? 'h-1/2 border-b border-gray-700' : 'h-full'">
             <CSSPanel />
           </div>
           <!-- CSS B (Diff 模式) -->
@@ -76,21 +76,21 @@ const showMeta = ref(true)
       </div>
 
       <!-- Middle: Token & CSSOM -->
-      <div class="w-56 border-r border-gray-700 flex-shrink-0 flex flex-col min-h-0">
-        <div class="h-1/2 border-b border-gray-700 overflow-hidden">
+      <div class="w-56 flex-shrink-0 flex flex-col min-h-0 gap-2">
+        <div class="flex-1 bg-gray-900 rounded-xl overflow-hidden">
           <TokenList />
         </div>
-        <div class="h-1/2 overflow-hidden">
+        <div class="flex-1 bg-gray-900 rounded-xl overflow-hidden">
           <CSSOMView />
         </div>
       </div>
 
       <!-- Center: DOM Tree & Style -->
-      <div class="flex-1 flex flex-col min-h-0">
-        <div class="flex-1 min-h-0">
+      <div class="flex-1 flex flex-col min-h-0 gap-2">
+        <div class="flex-1 min-h-0 bg-gray-900 rounded-xl overflow-hidden">
           <VisualizationCanvas />
         </div>
-        <div class="h-32 border-t border-gray-700 overflow-hidden">
+        <div class="h-32 bg-gray-900 rounded-xl overflow-hidden">
           <StyleView />
         </div>
       </div>
@@ -98,20 +98,22 @@ const showMeta = ref(true)
       <!-- Right: Meta Panel / Diff View -->
       <div 
         v-if="showMeta || store.diffMode"
-        class="w-72 border-l border-gray-700 flex-shrink-0 overflow-hidden flex flex-col"
+        class="w-72 flex-shrink-0 overflow-hidden flex flex-col gap-2"
       >
         <!-- Diff 模式显示对比视图 -->
-        <div v-if="store.diffMode" class="h-1/2 border-b border-gray-700 overflow-hidden">
+        <div v-if="store.diffMode" class="flex-1 bg-gray-900 rounded-xl overflow-hidden">
           <DiffView />
         </div>
         <!-- Meta 面板 -->
-        <div :class="store.diffMode ? 'h-1/2' : 'h-full'" class="overflow-hidden">
+        <div :class="store.diffMode ? 'flex-1' : 'h-full'" class="bg-gray-900 rounded-xl overflow-hidden">
           <MetaPanel v-if="showMeta" />
         </div>
       </div>
     </main>
 
     <!-- Bottom: Timeline -->
-    <Timeline />
+    <div class="bg-gray-900 rounded-xl">
+      <Timeline />
+    </div>
   </div>
 </template>
