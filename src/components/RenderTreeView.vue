@@ -8,6 +8,33 @@ const store = useSimulationStore()
 const svgRef = ref<SVGSVGElement | null>(null)
 const containerRef = ref<HTMLDivElement | null>(null)
 
+// 过滤树：只保留 tokenIndex <= 当前选中 Token 的节点
+function filterTree(node: RenderNode, maxTokenIndex: number): RenderNode | null {
+  if (node.tokenIndex !== undefined && node.tokenIndex > maxTokenIndex) {
+    return null
+  }
+  
+  const filteredChildren: RenderNode[] = []
+  for (const child of node.children) {
+    const filteredChild = filterTree(child, maxTokenIndex)
+    if (filteredChild) {
+      filteredChildren.push(filteredChild)
+    }
+  }
+  
+  return {
+    ...node,
+    children: filteredChildren
+  }
+}
+
+// 当前应该显示的树
+const visibleTree = computed(() => {
+  if (!store.renderTree) return null
+  if (store.selectedTokenIndex === null) return null
+  return filterTree(store.renderTree, store.selectedTokenIndex)
+})
+
 // 节点显示文本
 function getNodeLabel(node: RenderNode): string {
   if (node.textContent) {
@@ -17,20 +44,15 @@ function getNodeLabel(node: RenderNode): string {
   return node.tagName || '?'
 }
 
-// 节点颜色（根据样式）
-function getNodeColor(node: RenderNode): string {
-  // 如果有 color 样式，使用它
-  if (node.style.color) {
-    return node.style.color
-  }
-  if (node.textContent) {
-    return '#f59e0b'
-  }
+// 节点颜色
+function getNodeColor(node: RenderNode, isNew: boolean): string {
+  if (isNew) return '#fbbf24'
+  if (node.textContent) return '#f59e0b'
   return '#22c55e'
 }
 
 function renderTree() {
-  if (!svgRef.value || !containerRef.value || !store.renderTree) return
+  if (!svgRef.value || !containerRef.value || !visibleTree.value) return
 
   const container = containerRef.value
   const width = container.clientWidth
@@ -45,13 +67,14 @@ function renderTree() {
   const g = svg.append('g')
     .attr('transform', 'translate(40, 40)')
 
-  const root = d3.hierarchy(store.renderTree, d => d.children)
+  const root = d3.hierarchy(visibleTree.value, d => d.children)
 
   const treeLayout = d3.tree<RenderNode>()
     .size([width - 80, Math.max(height - 100, root.height * 60)])
     .separation((a, b) => (a.parent === b.parent ? 1.2 : 1.5))
 
   const treeData = treeLayout(root)
+  const currentTokenIndex = store.selectedTokenIndex ?? -1
 
   // 连线
   g.selectAll('.link')
@@ -76,21 +99,22 @@ function renderTree() {
     .attr('transform', d => `translate(${d.x}, ${d.y})`)
 
   nodes.append('circle')
-    .attr('r', 6)
-    .attr('fill', d => getNodeColor(d.data))
-    .attr('stroke', '#1f2937')
-    .attr('stroke-width', 2)
+    .attr('r', d => d.data.tokenIndex === currentTokenIndex ? 8 : 6)
+    .attr('fill', d => getNodeColor(d.data, d.data.tokenIndex === currentTokenIndex))
+    .attr('stroke', d => d.data.tokenIndex === currentTokenIndex ? '#fbbf24' : '#1f2937')
+    .attr('stroke-width', d => d.data.tokenIndex === currentTokenIndex ? 3 : 2)
 
   nodes.append('text')
     .attr('dy', -14)
     .attr('text-anchor', 'middle')
-    .attr('fill', '#e5e7eb')
+    .attr('fill', d => d.data.tokenIndex === currentTokenIndex ? '#fbbf24' : '#e5e7eb')
     .attr('font-size', '10px')
+    .attr('font-weight', d => d.data.tokenIndex === currentTokenIndex ? 'bold' : 'normal')
     .attr('font-family', 'monospace')
     .text(d => getNodeLabel(d.data))
 }
 
-watch(() => store.renderTree, () => {
+watch([visibleTree, () => store.selectedTokenIndex], () => {
   renderTree()
 }, { deep: true })
 
@@ -106,8 +130,8 @@ onMounted(() => {
 <template>
   <div ref="containerRef" class="render-tree-view w-full h-full relative">
     <svg ref="svgRef" class="w-full h-full" />
-    <div v-if="!store.renderTree" class="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
-      渲染树（过滤不可见节点）
+    <div v-if="!visibleTree" class="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
+      点击「开始解析」查看渲染树
     </div>
   </div>
 </template>

@@ -67,17 +67,18 @@ export class RenderTreeBuilder {
       }
     }
 
-    // document 节点特殊处理
+    // document 节点特殊处理 - 直接返回 body 的内容
     if (node.type === 'document') {
-      // 如果只有一个 body 子节点，直接返回 body
-      if (renderChildren.length === 1 && renderChildren[0]?.tagName === 'html') {
-        const html = renderChildren[0]
+      // 找到 html -> body 路径
+      const html = renderChildren.find(c => c.tagName === 'html')
+      if (html) {
         const body = html.children.find(c => c.tagName === 'body')
         if (body) {
           return body
         }
         return html
       }
+      // 没有 html 标签，返回所有子节点的容器
       return {
         id: node.id,
         tagName: '#document',
