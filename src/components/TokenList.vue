@@ -28,6 +28,15 @@ function getTokenTypeName(type: string): string {
   }
   return names[type] || type
 }
+
+function handleTokenClick(index: number) {
+  // 切换选中状态
+  if (store.selectedTokenIndex === index) {
+    store.selectToken(null)
+  } else {
+    store.selectToken(index)
+  }
+}
 </script>
 
 <template>
@@ -43,7 +52,12 @@ function getTokenTypeName(type: string): string {
         <div
           v-for="(token, index) in store.tokens"
           :key="index"
-          class="token-item p-2 rounded bg-gray-800 hover:bg-gray-750 text-xs font-mono"
+          class="token-item p-2 rounded bg-gray-800 text-xs font-mono cursor-pointer transition-all"
+          :class="{ 
+            'ring-2 ring-blue-500 bg-gray-700': store.selectedTokenIndex === index,
+            'hover:bg-gray-750': store.selectedTokenIndex !== index
+          }"
+          @click="handleTokenClick(index)"
         >
           <div class="flex items-center gap-2 mb-1">
             <span 

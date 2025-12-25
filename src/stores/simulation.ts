@@ -11,6 +11,7 @@ export const useSimulationStore = defineStore('simulation', () => {
   const currentStepIndex = ref(-1)
   const isPlaying = ref(false)
   const speed = ref(1000) // 毫秒
+  const selectedTokenIndex = ref<number | null>(null) // 当前选中的 Token
 
   // 计算属性
   const currentStep = computed(() => 
@@ -21,6 +22,11 @@ export const useSimulationStore = defineStore('simulation', () => {
   const canGoForward = computed(() => currentStepIndex.value < steps.value.length - 1)
   const progress = computed(() => 
     steps.value.length > 0 ? (currentStepIndex.value + 1) / steps.value.length : 0
+  )
+
+  // 当前选中的 Token
+  const selectedToken = computed(() => 
+    selectedTokenIndex.value !== null ? tokens.value[selectedTokenIndex.value] : null
   )
 
   // 操作
@@ -60,6 +66,7 @@ export const useSimulationStore = defineStore('simulation', () => {
     steps.value = []
     currentStepIndex.value = -1
     isPlaying.value = false
+    selectedTokenIndex.value = null
   }
 
   function setTokens(newTokens: Token[]) {
@@ -82,6 +89,10 @@ export const useSimulationStore = defineStore('simulation', () => {
     speed.value = ms
   }
 
+  function selectToken(index: number | null) {
+    selectedTokenIndex.value = index
+  }
+
   return {
     // 状态
     htmlSource,
@@ -91,11 +102,13 @@ export const useSimulationStore = defineStore('simulation', () => {
     currentStepIndex,
     isPlaying,
     speed,
+    selectedTokenIndex,
     // 计算属性
     currentStep,
     canGoBack,
     canGoForward,
     progress,
+    selectedToken,
     // 操作
     setHtmlSource,
     addStep,
@@ -108,5 +121,6 @@ export const useSimulationStore = defineStore('simulation', () => {
     play,
     pause,
     setSpeed,
+    selectToken,
   }
 })
