@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { watch, onUnmounted } from 'vue'
 import { useSimulationStore } from '../stores/simulation'
-import { tokenizer, domBuilder, cssParser, styleComputer, renderTreeBuilder } from '../engine'
+import { tokenizer, domBuilder, cssParser, styleComputer, renderTreeBuilder, layoutEngine } from '../engine'
 
 const store = useSimulationStore()
 
@@ -35,6 +35,12 @@ function handleStart() {
   // Step 5: 构建渲染树
   const renderTree = renderTreeBuilder.build(styledTree)
   store.setRenderTree(renderTree)
+  
+  // Step 6: 布局计算
+  if (renderTree) {
+    const layoutTree = layoutEngine.compute(renderTree, 600)
+    store.setLayoutTree(layoutTree)
+  }
   
   // 初始化：选中第一个 Token
   if (tokens.length > 0) {
