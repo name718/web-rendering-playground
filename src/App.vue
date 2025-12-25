@@ -8,6 +8,7 @@ import StyleView from './components/StyleView.vue'
 import VisualizationCanvas from './components/VisualizationCanvas.vue'
 import Timeline from './components/Timeline.vue'
 import MetaPanel from './components/MetaPanel.vue'
+import DemoSelector from './components/DemoSelector.vue'
 
 // 是否显示 Meta 面板
 const showMeta = ref(true)
@@ -17,7 +18,10 @@ const showMeta = ref(true)
   <div class="app h-screen w-screen flex flex-col bg-gray-900 text-white overflow-hidden">
     <!-- Header -->
     <header class="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
-      <h1 class="text-lg font-semibold">Browser Internals Visualizer</h1>
+      <div class="flex items-center gap-4">
+        <h1 class="text-lg font-semibold">Browser Internals Visualizer</h1>
+        <DemoSelector />
+      </div>
       <div class="flex items-center gap-4">
         <button 
           class="text-xs px-2 py-1 rounded transition"

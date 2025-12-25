@@ -228,7 +228,29 @@ const json = createPipeline()
 
 ---
 
-### ⭐ 4. 对比实验场景（Diff Mode）
+### ✅ 5. 预置 Demo 场景 - 已实现
+
+**文件**: `src/demos/index.ts`, `src/components/DemoSelector.vue`
+
+**5 个 Demo 场景**:
+
+| Demo | 面试问题 | 重点阶段 |
+|------|----------|----------|
+| display:none vs visibility | 两者有什么区别？ | Render Tree |
+| color vs width | 为什么改 color 不回流？ | Layout, Paint |
+| position:absolute | 为什么脱离文档流？ | Layout |
+| transform 合成层 | 为什么 transform 性能好？ | Composite |
+| will-change | 什么时候用 will-change？ | Composite |
+
+**使用方式**:
+- 点击顶部「🎯 选择 Demo」按钮
+- 选择一个场景，自动填充 HTML/CSS
+- 点击「开始解析」查看渲染过程
+- 右侧面板显示原理解释
+
+---
+
+### ⭐ 6. 对比实验场景（Diff Mode）
 
 **目标**: 5 个 Demo，每个解决 1 个面试问题
 
@@ -260,7 +282,7 @@ const json = createPipeline()
 
 1. ~~**Step Meta 信息**~~ ✅ 已完成
 2. ~~**Engine 解耦 + Pipeline**~~ ✅ 已完成
-3. **预置 Demo 场景** - 直接可用的教学内容
+3. ~~**预置 Demo 场景**~~ ✅ 已完成
 4. **对比实验模式** - 面试官眼前一亮的功能
 5. **可视化动画** - 锦上添花
 

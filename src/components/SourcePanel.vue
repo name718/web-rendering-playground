@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { computed } from 'vue'
 import { useSimulationStore } from '../stores/simulation'
 
 const store = useSimulationStore()
 
-const htmlInput = ref(`<!DOCTYPE html>
+// 双向绑定 store 的 htmlSource
+const htmlInput = computed({
+  get: () => store.htmlSource,
+  set: (val) => store.setHtmlSource(val)
+})
+
+// 初始化默认值
+if (!store.htmlSource) {
+  store.setHtmlSource(`<!DOCTYPE html>
 <html>
 <head>
   <title>Demo</title>
@@ -16,10 +24,7 @@ const htmlInput = ref(`<!DOCTYPE html>
   </div>
 </body>
 </html>`)
-
-watch(htmlInput, (val) => {
-  store.setHtmlSource(val)
-}, { immediate: true })
+}
 
 // 生成带高亮的 HTML
 const highlightedHtml = computed(() => {

@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useSimulationStore } from '../stores/simulation'
 
 const store = useSimulationStore()
 
-const cssInput = ref(`.container {
+// 双向绑定 store 的 cssSource
+const cssInput = computed({
+  get: () => store.cssSource,
+  set: (val) => store.setCssSource(val)
+})
+
+// 初始化默认值
+if (!store.cssSource) {
+  store.setCssSource(`.container {
   width: 100%;
   padding: 20px;
 }
@@ -22,10 +30,7 @@ p {
 .container h1 {
   color: red;
 }`)
-
-watch(cssInput, (val) => {
-  store.setCssSource(val)
-}, { immediate: true })
+}
 </script>
 
 <template>
