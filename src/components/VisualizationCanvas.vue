@@ -5,28 +5,29 @@ import DOMTreeView from './DOMTreeView.vue'
 import RenderTreeView from './RenderTreeView.vue'
 import LayoutView from './LayoutView.vue'
 import PaintView from './PaintView.vue'
+import LayersView from './LayersView.vue'
 
 const store = useSimulationStore()
-const activeTab = ref<'dom' | 'render' | 'layout' | 'paint'>('dom')
+const activeTab = ref<'dom' | 'render' | 'layout' | 'paint' | 'layers'>('dom')
 </script>
 
 <template>
   <div class="visualization-canvas h-full flex flex-col">
     <!-- Tab 切换 -->
-    <div class="panel-header px-3 py-2 border-b border-gray-700 flex items-center gap-4">
+    <div class="panel-header px-3 py-2 border-b border-gray-700 flex items-center gap-3 flex-wrap">
       <button
         class="text-sm font-medium transition"
         :class="activeTab === 'dom' ? 'text-blue-400' : 'text-gray-400 hover:text-gray-300'"
         @click="activeTab = 'dom'"
       >
-        DOM Tree
+        DOM
       </button>
       <button
         class="text-sm font-medium transition"
         :class="activeTab === 'render' ? 'text-blue-400' : 'text-gray-400 hover:text-gray-300'"
         @click="activeTab = 'render'"
       >
-        Render Tree
+        Render
       </button>
       <button
         class="text-sm font-medium transition"
@@ -41,6 +42,13 @@ const activeTab = ref<'dom' | 'render' | 'layout' | 'paint'>('dom')
         @click="activeTab = 'paint'"
       >
         Paint
+      </button>
+      <button
+        class="text-sm font-medium transition"
+        :class="activeTab === 'layers' ? 'text-blue-400' : 'text-gray-400 hover:text-gray-300'"
+        @click="activeTab = 'layers'"
+      >
+        Layers
       </button>
     </div>
     
@@ -64,8 +72,12 @@ const activeTab = ref<'dom' | 'render' | 'layout' | 'paint'>('dom')
         <LayoutView />
       </template>
       
-      <template v-else>
+      <template v-else-if="activeTab === 'paint'">
         <PaintView />
+      </template>
+      
+      <template v-else>
+        <LayersView />
       </template>
     </div>
   </div>

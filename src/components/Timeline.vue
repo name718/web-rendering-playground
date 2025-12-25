@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { watch, onUnmounted } from 'vue'
 import { useSimulationStore } from '../stores/simulation'
-import { tokenizer, domBuilder, cssParser, styleComputer, renderTreeBuilder, layoutEngine, paintGenerator } from '../engine'
+import { tokenizer, domBuilder, cssParser, styleComputer, renderTreeBuilder, layoutEngine, paintGenerator, compositeAnalyzer } from '../engine'
 
 const store = useSimulationStore()
 
@@ -44,6 +44,10 @@ function handleStart() {
     // Step 7: 生成绘制指令
     const commands = paintGenerator.generate(layoutTree)
     store.setPaintCommands(commands)
+    
+    // Step 8: 分析合成层
+    const layers = compositeAnalyzer.analyze(layoutTree)
+    store.setLayers(layers)
   }
   
   // 初始化：选中第一个 Token

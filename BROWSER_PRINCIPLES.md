@@ -127,13 +127,19 @@
 
 ---
 
-## 待实现
-
 ### 8. Composite（合成）
+**文件**: `src/engine/composite.ts`
+
 **浏览器原理**:
 - 将多个图层合成最终画面
-- GPU 加速
-- transform、opacity 等属性触发独立图层
+- 某些 CSS 属性会触发独立图层（GPU 加速）
+- 独立图层可以单独重绘，不影响其他图层
+- 触发条件：transform、opacity < 1、position: fixed、will-change、filter 等
+
+**我们的实现**:
+- 分析 LayoutBox 的样式
+- 检测触发独立图层的 CSS 属性
+- 生成图层列表，标注创建原因
 
 ---
 
