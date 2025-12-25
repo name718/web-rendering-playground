@@ -1,5 +1,7 @@
 # 浏览器原理可视化工具（Browser Internals Visualizer）
 
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+
 ## 一、项目一句话定位（非常重要）
 
 > **一个用“可视化 + 时间轴”的方式，演示浏览器从 HTML → 页面渲染全过程的学习工具**
@@ -223,3 +225,14 @@ Step 7: Paint
 ```
 
 HTML 字符串 → Token 数组 → DOM 树对象 → JSON 显示
+
+
+---
+
+## 📄 License
+
+本项目采用 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) 协议。
+
+- ✅ 可以自由分享、修改
+- ✅ 需要注明出处
+- ❌ **禁止商业用途**
