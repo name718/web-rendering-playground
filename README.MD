@@ -221,3 +221,5 @@ Step 7: Paint
 │ Timeline & Controls                     │
 └────────────────────────────────────────┘
 ```
+
+HTML 字符串 → Token 数组 → DOM 树对象 → JSON 显示
